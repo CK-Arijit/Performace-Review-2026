@@ -1,0 +1,52 @@
+1) Role and Project Contribution
+    Current role: At present I am leading a team of more than 10 people in the Risk Vertical of the EnFin project.
+    Ongoing Projects/work: The following are the ongoing key/big features that the team is currently working on that includes work on Salesforce, AWS, CL Portal, React native, Next JS. My role extends beyond development, involving end-to-end ownership of solution architecture, technical decision-making, client discussions, requirement analysis, effort estimation, and ensuring successful project delivery. The features are as follows:
+        IL Shine Incentive Program
+        Dynamic disbursement schedule program
+        New journey object in salesforce, to track customer journey engagement email with tracking and reports
+        Real time animated avatar for welcome call (Simli)
+        Enhancement on the home owner portal, partner installer portal
+    Key Contributions: The contributions that I have made throughout the year are as follows:
+        Salesforce user migration from Salesforce to Clerk for both partners and homeowners. We have migrated more than 2lakh users. After the go live very few issues are reported till now.
+        Revamped and take homeowner live in the schduled time. No delay. As mentioned by the client over email - "Now that we are live on both Loan and TPO borrower portal on Custom React portal, I wanted to send a thank you note and appreciate all the effort put in by team in making this happen. This was not an easy task considering the complexity of the front-end UI and the all the API integration with Salesforce backend. Thank you for coming up with optimal architecture and implementing it in Production."
+        Revamped the entire partnew portal dashboard with new UI/UX that has been appreciated by the client. The development is ongoing and the scheduled tentative go live in on the 2nd week of Auguest this year. As metioned by client - "We had our first discussion on the partner portal demo with business this week. They all gave great feedback on the Mockup. Good job in building it out. And same feedback from the UI UX lead, Adam was very impressed with the design."
+        The development and deployment has been completed in a single day to develop the key feature for the business: DCA upload link - As mentioned by the client over email. "Thank you for stretching the whole day to get the document upload link into production in record time. This will be a huge win for business to get the process streamlined. All the DCA documents were collected through google drive which was a painful process."
+
+2) Account/Customer Growth and Engineering Practice Improvements
+    Independently handled client technical discussions, requirement clarifications, and solution demonstrations during various phases of the project.
+    Built trust with customers by quickly resolving production issues and providing technically sound recommendations during critical situations.
+    Introduced better engineering practices by encouraging reusable components, cleaner code structure, proper logging, monitoring, and improved deployment processes. Recently used Sentry for the better log monitoring.
+    Promoted design-first thinking and architectural reviews before implementation to reduce technical debt and improve overall solution quality. And every solution design and technical approaches are tracked in Jira and confluence.
+
+3) Contribution to the Delivery Unit
+    Throughout the year I have mentored many resources onboarded in my DU-head. Help team members to onboard in the project, given KT on multiple features and technologies, played an important mentorship role for the resources across every aspects like communication improvement with client, how to present solution design more effectively, encouraged engineering best practices including structured code reviews, reusable design, documentation, and maintainable solution architecture. Currently mentoring some of the resources are as follows: Bhaskar Pal, Archisman Saha, Faizan Ali Khan, Pritam Chakraborty etc
+    Prepared the vibe coding demo for our client, covering different concepts and workflows using codex.
+    EnFin & AgGuard - Parallely work across two projects in the previous year at two different timezones. 
+
+
+ 4) Company-level Contribution
+    Recently work on the new company prospects Tappoo - Built an enterprise ready scalable  ios/android app mockup for Tappoo by understanding business and and their exisiting system. The work has been appreciated and valued by the company as well. 
+    Always help company at the every hiring process that has hapenned throughout the year
+
+5) Technology Learning and Competency Building
+    Throughout the year I have worked across mutliple tech stack. Spent many hours and weekends this year to learn the core of those technolgies. The technologies are as follows: 
+        Next JS, React/React native - Deepened expertise in Next.js architecture, middleware, server-side rendering, routing, and scalable frontend application design.
+        AWS Certified Cloud Practitioner - Built practical experience with AWS services including Amplify, CloudFront, S3, Lambda integrations, and production deployment strategies usingg Amplify
+        Flutter & Dart - I am plannning to built one demo app similar to Tappoo and that will be helpful if that project comes to us.
+        Salesforce - Strengthened knowledge of Salesforce integration patterns using Connected Apps, Apex APIs, Flow automation, Platform Events, and Agentforce to increase productivity through AI-assisted engineering
+        Currently preparing for the Salesforce Marketing Cloud certification.
+
+6) Understanding and Imbibing Company Culture
+    Throughout the year, I have consistently demonstrated the organization's core values through ownership, collaboration, customer focus, and engineering excellence.
+
+    I strongly believe in taking complete ownership of assigned responsibilities rather than limiting myself to development tasks alone. I proactively participate in solution design, customer discussions, production support, mentoring, and business initiatives whenever required.
+
+    I encourage a collaborative work culture by:
+
+        Supporting teammates during challenging technical situations.
+        Sharing knowledge openly across the engineering team.
+        Promoting quality-focused engineering practices.
+        Leading by example through accountability, timely delivery, and professional communication.
+        Maintaining a customer-first mindset while balancing technical excellence and business priorities.
+
+    I continuously strive to build a culture where engineers focus not only on writing code but also on understanding customer problems, designing scalable solutions, and taking end-to-end ownership of project success.
