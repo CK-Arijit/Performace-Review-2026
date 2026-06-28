@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Performance Review — Year in Reflection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root{
+    --ink:#0b0a08;
+    --paper:#f4efe6;
+    --paper-2:#ece5d6;
+    --accent:#c2410c;
+    --accent-2:#7c2d12;
+    --gold:#a58a4b;
+    --muted:#6b6358;
+    --line:rgba(11,10,8,0.12);
+  }
+  *{ -webkit-font-smoothing:antialiased; }
+  html,body{ background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; }
+  .serif{ font-family:'Fraunces',serif; font-optical-sizing:auto; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+  .grain{
+    position:fixed; inset:0; pointer-events:none; opacity:.35; mix-blend-mode:multiply; z-index:1;
+    background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .hairline{ border-color:var(--line); }
+  .display{ font-family:'Fraunces',serif; font-weight:300; letter-spacing:-0.04em; line-height:0.92; }
+  .number{ font-family:'Fraunces',serif; font-weight:300; font-variant-numeric:lining-nums; }
+  .chip{
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.35rem .7rem; border:1px solid var(--line);
+    border-radius:999px; background:rgba(255,255,255,0.4);
+    font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+  }
+  .dot{ width:6px; height:6px; border-radius:999px; background:var(--accent); display:inline-block; }
+  .rule{ height:1px; background:linear-gradient(90deg, transparent, var(--line), transparent); }
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.2));
+    border:1px solid var(--line); backdrop-filter:blur(6px);
+  }
+  .ink-card{ background:var(--ink); color:var(--paper); }
+  .quote-mark{
+    font-family:'Fraunces',serif; font-weight:300; line-height:0.6;
+    font-size:9rem; color:var(--accent); opacity:.85;
+  }
+  .marquee{ display:flex; gap:3rem; animation:scroll 50s linear infinite; }
+  @keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .underline-grow{ position:relative; }
+  .underline-grow::after{
+    content:""; position:absolute; left:0; bottom:-4px; height:2px; width:0;
+    background:var(--accent); transition:width .6s ease;
+  }
+  .in-view .underline-grow::after{ width:100%; }
+  .reveal{ opacity:0; transform:translateY(24px); }
+  .num-tab{
+    width:48px; height:48px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+    background:var(--ink); color:var(--paper); font-family:'Fraunces',serif; font-weight:400;
+  }
+  .toc-link{ display:flex; justify-content:space-between; padding:1rem 0; border-bottom:1px solid var(--line); }
+  .toc-link:hover .toc-arrow{ transform:translateX(4px); color:var(--accent); }
+  .toc-arrow{ transition:all .3s ease; }
+  .pill{
+    border:1px solid var(--line); padding:.45rem .85rem; border-radius:999px;
+    font-size:.78rem; background:rgba(255,255,255,.5);
+  }
+  .stat-card{
+    border:1px solid var(--line); padding:1.75rem;
+    background:linear-gradient(180deg,#fff,rgba(236,229,214,.6));
+    position:relative; overflow:hidden;
+  }
+  .stat-card::before{
+    content:""; position:absolute; top:0; left:0; height:3px; width:40%;
+    background:var(--accent);
+  }
+  .tech-bar{
+    height:6px; background:var(--paper-2); border-radius:999px; overflow:hidden;
+  }
+  .tech-fill{ height:100%; background:linear-gradient(90deg,var(--accent-2),var(--accent),var(--gold)); }
+  .section-num{
+    font-family:'Fraunces',serif; font-size:.85rem; letter-spacing:.4em;
+    color:var(--muted); text-transform:uppercase;
+  }
+  .big-h{ font-size:clamp(2.4rem,5.2vw,5rem); }
+  .ink-bg{ background:var(--ink); color:var(--paper); }
+  .ink-bg .hairline{ border-color:rgba(244,239,230,0.12); }
+  .ink-bg .chip{ background:rgba(244,239,230,0.04); border-color:rgba(244,239,230,0.18); color:var(--paper); }
+  .ink-bg .pill{ background:rgba(244,239,230,0.04); border-color:rgba(244,239,230,0.18); color:var(--paper); }
+  .badge-dot{ width:8px; height:8px; border-radius:999px; }
+  .scroll-tag{
+    position:fixed; left:24px; top:50%; transform:translateY(-50%) rotate(-90deg);
+    transform-origin:left center; font-size:.7rem; letter-spacing:.4em;
+    text-transform:uppercase; color:var(--muted); z-index:20;
+  }
+  .progress-track{
+    position:fixed; top:0; left:0; right:0; height:2px; background:transparent; z-index:50;
+  }
+  .progress-bar{ height:100%; background:var(--accent); width:0%; }
+  details summary{ list-style:none; cursor:pointer; }
+  details summary::-webkit-details-marker{ display:none; }
+  .arrow-icon{ display:inline-block; transition:transform .4s ease; }
+  details[open] .arrow-icon{ transform:rotate(45deg); }
+  .glyph{
+    width:36px; height:36px; border:1px solid var(--line); border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-size:.95rem;
+  }
+  .signature{
+    font-family:'Fraunces',serif; font-weight:300; font-style:italic;
+    font-size:2.2rem; letter-spacing:-0.02em;
+  }
+</style>
+</head>
+<body class="overflow-x-hidden">
+<div class="grain"></div>
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- Navigation -->
+<nav class="fixed top-0 left-0 right-0 z-40 px-6 md:px-12 py-5 flex items-center justify-between backdrop-blur-md" style="background:rgba(244,239,230,0.7); border-bottom:1px solid var(--line);">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full overflow-hidden" style="border:1px solid var(--line);">
+      <img src="avatar.jpeg" alt="Profile" class="w-full h-full object-cover" />
+    </div>
+    <div class="leading-tight">
+      <div class="serif text-base">Performance Review</div>
+      <div class="text-[10px] tracking-[0.3em] uppercase" style="color:var(--muted);">Annual · 2025–2026</div>
+    </div>
+  </div>
+  <div class="hidden md:flex items-center gap-8 text-xs tracking-wider uppercase">
+    <a href="#section-1" class="hover:text-[var(--accent)] transition">Role</a>
+    <a href="#section-2" class="hover:text-[var(--accent)] transition">Growth</a>
+    <a href="#section-3" class="hover:text-[var(--accent)] transition">Delivery</a>
+    <a href="#section-4" class="hover:text-[var(--accent)] transition">Company</a>
+    <a href="#section-5" class="hover:text-[var(--accent)] transition">Learning</a>
+    <a href="#section-6" class="hover:text-[var(--accent)] transition">Culture</a>
+  </div>
+  <div class="chip"><span class="dot"></span>Internal</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="relative pt-40 pb-24 px-6 md:px-12 min-h-screen flex flex-col justify-between">
+  <div class="max-w-7xl mx-auto w-full">
+    <div class="flex items-center gap-4 mb-12">
+      <span class="section-num">The Annual Review</span>
+      <div class="flex-1 h-px" style="background:var(--line);"></div>
+      <span class="mono text-xs" style="color:var(--muted);">FY · 2025–26</span>
+    </div>
+
+    <h1 class="display big-h mb-10">
+      A year of <em class="serif italic" style="color:var(--accent);">ownership</em>,<br/>
+      architecture, and <em class="serif italic">acceleration</em>.
+    </h1>
+
+    <div class="grid md:grid-cols-12 gap-10 items-end">
+      <div class="md:col-span-7">
+        <p class="text-lg md:text-xl leading-relaxed max-w-2xl" style="color:#2b2722;">
+          Demonstrated end-to-end technical leadership by driving solution architecture, engineering excellence, customer engagement, and successful delivery of strategic initiatives across the EnFin platform, while leading high-performing teams, mentoring engineers, and contributing to business growth through innovation, pre-sales, and continuous technology advancement.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto w-full mt-24">
+    <div class="rule mb-6"></div>
+    <div class="flex justify-between items-center text-xs" style="color:var(--muted);">
+      <span class="tracking-[0.3em] uppercase">Scroll to begin</span>
+      <span class="mono">↓ 00 / 06</span>
+    </div>
+  </div>
+</section>
+
+<!-- TABLE OF CONTENTS -->
+<section class="px-6 md:px-12 py-24 relative">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-12 gap-12">
+      <div class="md:col-span-4">
+        <div class="section-num mb-4">Contents</div>
+        <h2 class="display text-4xl md:text-5xl">The six chapters of the year.</h2>
+      </div>
+      <div class="md:col-span-8">
+        <a href="#section-1" class="toc-link group">
+          <div class="flex items-baseline gap-6">
+            <span class="mono text-sm" style="color:var(--muted);">01</span>
+            <div>
+              <div class="serif text-2xl">Role &amp; Project Contribution</div>
+              <div class="text-sm mt-1" style="color:var(--muted);">Leadership, ongoing projects, key wins</div>
+            </div>
+          </div>
+          <span class="toc-arrow serif text-2xl">→</span>
+        </a>
+        <a href="#section-2" class="toc-link group">
+          <div class="flex items-baseline gap-6">
+            <span class="mono text-sm" style="color:var(--muted);">02</span>
+            <div>
+              <div class="serif text-2xl">Customer Growth &amp; Engineering Excellence</div>
+              <div class="text-sm mt-1" style="color:var(--muted);">Trusted advisor, best practices, monitoring</div>
+            </div>
+          </div>
+          <span class="toc-arrow serif text-2xl">→</span>
+        </a>
+        <a href="#section-3" class="toc-link group">
+          <div class="flex items-baseline gap-6">
+            <span class="mono text-sm" style="color:var(--muted);">03</span>
+            <div>
+              <div class="serif text-2xl">Contribution to the Delivery Unit</div>
+              <div class="text-sm mt-1" style="color:var(--muted);">Mentoring, code reviews, dual-project leadership</div>
+            </div>
+          </div>
+          <span class="toc-arrow serif text-2xl">→</span>
+        </a>
+        <a href="#section-4" class="toc-link group">
+          <div class="flex items-baseline gap-6">
+            <span class="mono text-sm" style="color:var(--muted);">04</span>
+            <div>
+              <div class="serif text-2xl">Company-Level Contribution</div>
+              <div class="text-sm mt-1" style="color:var(--muted);">Pre-sales, hiring, prototype building</div>
+            </div>
+          </div>
+          <span class="toc-arrow serif text-2xl">→</span>
+        </a>
+        <a href="#section-5" class="toc-link group">
+          <div class="flex items-baseline gap-6">
+            <span class="mono text-sm" style="color:var(--muted);">05</span>
+            <div>
+              <div class="serif text-2xl">Technology Learning &amp; Competency</div>
+              <div class="text-sm mt-1" style="color:var(--muted);">Next.js, AWS, Flutter, Salesforce, certifications</div>
+            </div>
+          </div>
+          <span class="toc-arrow serif text-2xl">→</span>
+        </a>
+        <a href="#section-6" class="toc-link group">
+          <div class="flex items-baseline gap-6">
+            <span class="mono text-sm" style="color:var(--muted);">06</span>
+            <div>
+              <div class="serif text-2xl">Imbibing Company Culture</div>
+              <div class="text-sm mt-1" style="color:var(--muted);">Ownership, collaboration, long-term vision</div>
+            </div>
+          </div>
+          <span class="toc-arrow serif text-2xl">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1 placeholder -->
+<section id="section-1" class="px-6 md:px-12 py-24 relative">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="num-tab">01</div>
+      <div class="section-num">Role &amp; Project Contribution</div>
+      <div class="flex-1 h-px" style="background:var(--line);"></div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-20">
+      <div class="md:col-span-5">
+        <span class="chip mb-4"><span class="dot"></span>Current Role</span>
+        <h2 class="display text-4xl md:text-5xl mt-6 mb-6">Leading the<br/><em class="italic" style="color:var(--accent);">Risk Vertical</em>.</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-lg leading-relaxed" style="color:#2b2722;">
+          Currently, I lead a team of <span class="serif italic">over 10 engineers</span> within the Risk Vertical of the EnFin project. My responsibilities extend beyond engineering delivery to include solution architecture, technical leadership, client engagement, requirement analysis, effort estimation, risk management, and end-to-end ownership of project execution.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-6">
+          <span class="pill">Solution Architecture</span>
+          <span class="pill">Technical Leadership</span>
+          <span class="pill">Client Engagement</span>
+          <span class="pill">Requirement Analysis</span>
+          <span class="pill">Effort Estimation</span>
+          <span class="pill">Risk Management</span>
+          <span class="pill">End-to-End Ownership</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule mb-16"></div>
+
+    <!-- Ongoing Projects -->
+    <div class="mb-20">
+      <div class="flex items-baseline justify-between mb-10">
+        <h3 class="serif text-3xl md:text-4xl">Ongoing Developments</h3>
+        <span class="mono text-xs" style="color:var(--muted);">5 significant features</span>
+      </div>
+      <p class="max-w-3xl mb-10" style="color:#2b2722;">
+        The team is currently driving several strategic initiatives across <span class="serif italic">Salesforce, AWS, Next.js, React Native</span>, and the Symphonix By Q2 portal, including:
+      </p>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="stat-card">
+          <div class="mono text-xs mb-3" style="color:var(--muted);">FEATURE · 01</div>
+          <div class="serif text-2xl mb-2">IL Shine Incentive Program</div>
+          <div class="text-sm" style="color:var(--muted);">Illinois Shines is a state-administered solar program that provides incentives for the development of qualified solar projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="mono text-xs mb-3" style="color:var(--muted);">FEATURE · 02</div>
+          <div class="serif text-2xl mb-2">Dynamic Disbursement Schedule</div>
+          <div class="text-sm" style="color:var(--muted);">Business teams need flexibility to add new disbursement schedule without dependency on technical team. This should be available as a configurable item for certain user groups.</div>
+        </div>
+        <div class="stat-card">
+          <div class="mono text-xs mb-3" style="color:var(--muted);">FEATURE · 03</div>
+          <div class="serif text-2xl mb-2">Salesforce Journey Object</div>
+          <div class="text-sm" style="color:var(--muted);">Customer engagement tracking, email tagging, and reporting</div>
+        </div>
+        <div class="stat-card">
+          <div class="mono text-xs mb-3" style="color:var(--muted);">FEATURE · 04</div>
+          <div class="serif text-2xl mb-2">AI Animated Avatar</div>
+          <div class="text-sm" style="color:var(--muted);">Real-time customer welcome calls via Simli integration</div>
+        </div>
+        <div class="stat-card md:col-span-2">
+          <div class="mono text-xs mb-3" style="color:var(--muted);">FEATURE · 05</div>
+          <div class="serif text-2xl mb-2">Homeowner &amp; Partner Installer Portal</div>
+          <div class="text-sm" style="color:var(--muted);">Enhancements across both flagship customer and partner facing portals</div>
+        </div>
+      </div>
+      <p class="mt-10 max-w-3xl" style="color:#2b2722;">
+        I am responsible for <span class="serif italic">defining the overall solution architecture</span>, making key technical decisions, coordinating with stakeholders, mentoring the team, and ensuring timely and high-quality delivery across these initiatives.
+      </p>
+    </div>
+
+    <div class="rule mb-16"></div>
+
+    <!-- Key Contributions -->
+    <div>
+      <div class="flex items-baseline justify-between mb-10">
+        <h3 class="serif text-3xl md:text-4xl">Key Contributions</h3>
+        <span class="mono text-xs" style="color:var(--muted);">Highlighted wins</span>
+      </div>
+
+      <!-- Contribution 1 -->
+      <div class="grid md:grid-cols-12 gap-10 mb-16">
+        <div class="md:col-span-4">
+          <div class="number text-7xl" style="color:var(--accent);">200K+</div>
+          <div class="text-xs tracking-[0.25em] uppercase mt-2" style="color:var(--muted);">Users Migrated</div>
+        </div>
+        <div class="md:col-span-8">
+          <div class="chip mb-3"><span class="dot"></span>Migration</div>
+          <h4 class="serif text-2xl md:text-3xl mb-3">Salesforce → Clerk User Migration</h4>
+          <p class="mb-6" style="color:#2b2722;">Successfully led the migration of more than 200,000 Partner and Homeowner users from Salesforce authentication to Clerk. The migration was executed seamlessly with minimal post-production issues, ensuring business continuity and improved authentication scalability.</p>
+          <div class="card p-8 quote-block relative">
+            <div class="quote-mark absolute -top-4 left-6">“</div>
+            <p class="serif text-lg md:text-xl italic leading-relaxed pl-4" style="color:#2b2722;">
+              A big thank you for successfully launching the new Pre-Qualification front end and Clerk Authentication on our Partner Portal. Both these initiatives were huge for us. You guys did a great job in managing and owning the project end to end. Really appreciate all your hard work in making this happen in time. We have not seen any issues raised by PI for pre-qualification or authentication. That gives a clear indication that the quality of development was great. Thank you again and Congratulations for a job well-done.
+            </p>
+            <div class="mt-4 pl-4 text-xs tracking-[0.25em] uppercase" style="color:var(--muted);">— Client Recognition</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contribution 2 with quote -->
+      <div class="grid md:grid-cols-12 gap-10 mb-16">
+        <div class="md:col-span-4">
+          <div class="number text-7xl" style="color:var(--accent);">On time</div>
+          <div class="text-xs tracking-[0.25em] uppercase mt-2" style="color:var(--muted);">Production rollout</div>
+        </div>
+        <div class="md:col-span-8">
+          <div class="chip mb-3"><span class="dot"></span>Modernization</div>
+          <h4 class="serif text-2xl md:text-3xl mb-3">Homeowner Portal Revamp</h4>
+          <p class="mb-6" style="color:#2b2722;">Led the complete modernization and successful production rollout of the Homeowner Portal within the committed timeline. This involved redesigning the frontend architecture, implementing complex Salesforce API integrations, and ensuring a smooth production launch without schedule delays.</p>
+          <div class="card p-8 quote-block relative">
+            <div class="quote-mark absolute -top-4 left-6">“</div>
+            <p class="serif text-lg md:text-xl italic leading-relaxed pl-4" style="color:#2b2722;">
+              Now that we are live on both Loan and TPO borrower portal on Custom React portal, I wanted to send a thank you note and appreciate all the effort put in by the team in making this happen. This was not an easy task considering the complexity of the front-end UI and all the API integrations with Salesforce backend. Thank you for coming up with optimal architecture and implementing it in Production.
+            </p>
+            <div class="mt-4 pl-4 text-xs tracking-[0.25em] uppercase" style="color:var(--muted);">— Client Recognition</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contribution 3 -->
+      <div class="grid md:grid-cols-12 gap-10 mb-16">
+        <div class="md:col-span-4">
+          <div class="number text-7xl" style="color:var(--accent);">Aug</div>
+          <div class="text-xs tracking-[0.25em] uppercase mt-2" style="color:var(--muted);">Targeted rollout</div>
+        </div>
+        <div class="md:col-span-8">
+          <div class="chip mb-3"><span class="dot"></span>UI / UX Redesign</div>
+          <h4 class="serif text-2xl md:text-3xl mb-3">Partner Installer Portal Modernization</h4>
+          <p class="mb-6" style="color:#2b2722;">Spearheaded the redesign of the Partner Installer Portal with a modern UI/UX and scalable frontend architecture. The solution received highly positive feedback from both business stakeholders and the client's UI/UX leadership. Development is progressing as planned with the targeted production rollout in the second week of August.</p>
+          <div class="card p-8 quote-block relative">
+            <div class="quote-mark absolute -top-4 left-6">“</div>
+            <p class="serif text-lg md:text-xl italic leading-relaxed pl-4" style="color:#2b2722;">
+              We had our first discussion on the Partner Portal demo with business this week. They all gave great feedback on the mockup. Good job in building it out. Adam was also very impressed with the design.
+            </p>
+            <div class="mt-4 pl-4 text-xs tracking-[0.25em] uppercase" style="color:var(--muted);">— Client Feedback</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contribution 4 -->
+      <div class="grid md:grid-cols-12 gap-10">
+        <div class="md:col-span-4">
+          <div class="number text-7xl" style="color:var(--accent);">1 day</div>
+          <div class="text-xs tracking-[0.25em] uppercase mt-2" style="color:var(--muted);">Design → Production</div>
+        </div>
+        <div class="md:col-span-8">
+          <div class="chip mb-3"><span class="dot"></span>Rapid Delivery</div>
+          <h4 class="serif text-2xl md:text-3xl mb-3">DCA Document Upload Link</h4>
+          <p class="mb-6" style="color:#2b2722;">Successfully designed, developed, tested, and deployed the DCA Document Upload Link within a single day to meet an urgent business requirement. This significantly streamlined the document collection process by replacing the manual Google Drive workflow.</p>
+          <div class="card p-8 quote-block relative">
+            <div class="quote-mark absolute -top-4 left-6">“</div>
+            <p class="serif text-lg md:text-xl italic leading-relaxed pl-4" style="color:#2b2722;">
+              Thank you for stretching the whole day to get the document upload link into production in record time. This will be a huge win for business to get the process streamlined.
+            </p>
+            <div class="mt-4 pl-4 text-xs tracking-[0.25em] uppercase" style="color:var(--muted);">— Client Recognition</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 placeholder -->
+<section id="section-2" class="ink-bg px-6 md:px-12 py-24 relative">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="num-tab" style="background:var(--paper); color:var(--ink);">02</div>
+      <div class="section-num" style="color:rgba(244,239,230,0.6);">Account Growth &amp; Engineering Practice</div>
+      <div class="flex-1 h-px" style="background:rgba(244,239,230,0.15);"></div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-16">
+      <div class="md:col-span-5">
+        <h2 class="display text-4xl md:text-5xl">A <em class="italic" style="color:var(--gold);">trusted advisor</em> across every conversation.</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-lg leading-relaxed" style="color:rgba(244,239,230,0.8);">
+          Throughout the year, I have actively contributed to strengthening customer relationships by serving as a trusted technical advisor during discussions, solution workshops, and project planning sessions.
+        </p>
+      </div>
+    </div>
+
+    <div class="rule mb-12" style="background:linear-gradient(90deg,transparent,rgba(244,239,230,0.2),transparent);"></div>
+
+    <div class="mb-8 section-num" style="color:rgba(244,239,230,0.6);">Key Contributions</div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="p-8 border" style="border-color:rgba(244,239,230,0.15);">
+        <div class="glyph mb-5" style="color:var(--paper); border-color:rgba(244,239,230,0.25);">i</div>
+        <h4 class="serif text-2xl mb-3">Independent Client Leadership</h4>
+        <p style="color:rgba(244,239,230,0.75);">Independently leading technical discussions, requirement clarification sessions, architecture reviews, and solution demonstrations with clients.</p>
+      </div>
+      <div class="p-8 border" style="border-color:rgba(244,239,230,0.15);">
+        <div class="glyph mb-5" style="color:var(--paper); border-color:rgba(244,239,230,0.25);">ii</div>
+        <h4 class="serif text-2xl mb-3">Building Customer Confidence</h4>
+        <p style="color:rgba(244,239,230,0.75);">Resolving production issues promptly and providing technically sound recommendations during critical situations.</p>
+      </div>
+      <div class="p-8 border" style="border-color:rgba(244,239,230,0.15);">
+        <div class="glyph mb-5" style="color:var(--paper); border-color:rgba(244,239,230,0.25);">iii</div>
+        <h4 class="serif text-2xl mb-3">Engineering Best Practices</h4>
+        <p style="color:rgba(244,239,230,0.75);">Introducing reusable component design, clean code principles, structured logging, proactive monitoring, and improved deployment processes.</p>
+      </div>
+      <div class="p-8 border" style="border-color:rgba(244,239,230,0.15);">
+        <div class="glyph mb-5" style="color:var(--paper); border-color:rgba(244,239,230,0.25);">iv</div>
+        <h4 class="serif text-2xl mb-3">Design-First Thinking</h4>
+        <p style="color:rgba(244,239,230,0.75);">Promoting solution architecture reviews before implementation, reducing technical debt and improving maintainability.</p>
+      </div>
+      <div class="p-8 border" style="border-color:rgba(244,239,230,0.15);">
+        <div class="glyph mb-5" style="color:var(--paper); border-color:rgba(244,239,230,0.25);">v</div>
+        <h4 class="serif text-2xl mb-3">Knowledge Documentation</h4>
+        <p style="color:rgba(244,239,230,0.75);">Ensuring all architectural decisions, technical approaches, and implementation strategies are properly documented in Jira and Confluence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 placeholder -->
+<section id="section-3" class="px-6 md:px-12 py-24 relative">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="num-tab">03</div>
+      <div class="section-num">Contribution to the Delivery Unit</div>
+      <div class="flex-1 h-px" style="background:var(--line);"></div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-16">
+      <div class="md:col-span-5">
+        <h2 class="display text-4xl md:text-5xl">Building capability<br/>through <em class="italic" style="color:var(--accent);">mentorship</em>.</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-lg leading-relaxed" style="color:#2b2722;">
+          Beyond project delivery, I have actively invested in building technical capability within the Delivery Unit through mentoring, knowledge sharing, and leadership.
+        </p>
+      </div>
+    </div>
+
+    <div class="rule mb-16"></div>
+
+    <!-- Mentees spotlight -->
+    <div class="card p-10 mb-16">
+      <div class="flex items-baseline justify-between mb-8">
+        <h3 class="serif text-2xl md:text-3xl">Currently Mentoring</h3>
+        <span class="mono text-xs" style="color:var(--muted);">04 engineers</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 rounded-full flex items-center justify-center serif text-2xl" style="background:var(--ink); color:var(--paper);">BP</div>
+          <div class="serif text-lg">Bhaskar Pal</div>
+        </div>
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 rounded-full flex items-center justify-center serif text-2xl" style="background:var(--ink); color:var(--paper);">AS</div>
+          <div class="serif text-lg">Archisman Saha</div>
+        </div>
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 rounded-full flex items-center justify-center serif text-2xl" style="background:var(--ink); color:var(--paper);">FK</div>
+          <div class="serif text-lg">Faizan Ali Khan</div>
+        </div>
+        <div class="text-center">
+          <div class="w-20 h-20 mx-auto mb-3 rounded-full flex items-center justify-center serif text-2xl" style="background:var(--ink); color:var(--paper);">PC</div>
+          <div class="serif text-lg">Pritam Chakraborty</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contributions list -->
+    <div class="grid md:grid-cols-2 gap-x-12 gap-y-10">
+      <div class="flex gap-5">
+        <div class="serif text-3xl" style="color:var(--accent);">01</div>
+        <div>
+          <h4 class="serif text-xl mb-2">Mentoring &amp; Onboarding</h4>
+          <p style="color:#2b2722;">Provided functional and technical knowledge transfer sessions across various features and technologies to multiple engineers.</p>
+        </div>
+      </div>
+      <div class="flex gap-5">
+        <div class="serif text-3xl" style="color:var(--accent);">02</div>
+        <div>
+          <h4 class="serif text-xl mb-2">Communication Coaching</h4>
+          <p style="color:#2b2722;">Guided team members on effective client communication, technical presentation skills, solution design, and engineering best practices.</p>
+        </div>
+      </div>
+      <div class="flex gap-5">
+        <div class="serif text-3xl" style="color:var(--accent);">03</div>
+        <div>
+          <h4 class="serif text-xl mb-2">Regular Code Reviews</h4>
+          <p style="color:#2b2722;">Promoting reusable architecture, maintainable code, documentation standards, and scalable solution design.</p>
+        </div>
+      </div>
+      <div class="flex gap-5">
+        <div class="serif text-3xl" style="color:var(--accent);">04</div>
+        <div>
+          <h4 class="serif text-xl mb-2">Vibe Coding Showcase</h4>
+          <p style="color:#2b2722;">Prepared and demonstrated the Vibe Coding showcase for the client, introducing modern AI-assisted development workflows using Codex.</p>
+        </div>
+      </div>
+      <div class="flex gap-5 md:col-span-2">
+        <div class="serif text-3xl" style="color:var(--accent);">05</div>
+        <div>
+          <h4 class="serif text-xl mb-2">Dual-Project Leadership · EnFin &amp; AgGuard</h4>
+          <p style="color:#2b2722;">Successfully contributed across both EnFin and AgGuard projects simultaneously, effectively managing responsibilities across different time zones while maintaining delivery commitments.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 placeholder -->
+<section id="section-4" class="px-6 md:px-12 py-24 relative" style="background:var(--paper-2);">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="num-tab">04</div>
+      <div class="section-num">Company-level Contribution</div>
+      <div class="flex-1 h-px" style="background:var(--line);"></div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-16">
+      <div class="md:col-span-5">
+        <h2 class="display text-4xl md:text-5xl">Beyond the project, into <em class="italic" style="color:var(--accent);">organizational growth</em>.</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-lg leading-relaxed" style="color:#2b2722;">
+          Apart from project responsibilities, I have actively contributed to organizational growth through pre-sales support and talent acquisition initiatives.
+        </p>
+      </div>
+    </div>
+
+    <div class="rule mb-16"></div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="card p-8 h-full">
+        <div class="mono text-xs mb-4" style="color:var(--muted);">CONTRIBUTION · 01</div>
+        <div class="chip mb-5"><span class="dot"></span>Pre-Sales</div>
+        <h4 class="serif text-2xl mb-3">Tappoo Prototype</h4>
+        <p style="color:#2b2722;">Designed and developed an enterprise-ready, scalable iOS and Android application prototype for the Tappoo opportunity after understanding the customer's business processes and existing ecosystem. The solution was well appreciated internally and added value during customer discussions.</p>
+        <div class="flex flex-wrap gap-2 mt-5">
+          <span class="pill">iOS</span><span class="pill">Android</span><span class="pill">Enterprise-Ready</span>
+        </div>
+      </div>
+      <div class="card p-8 h-full">
+        <div class="mono text-xs mb-4" style="color:var(--muted);">CONTRIBUTION · 02</div>
+        <div class="chip mb-5"><span class="dot"></span>Talent Acquisition</div>
+        <h4 class="serif text-2xl mb-3">Technical Interviews</h4>
+        <p style="color:#2b2722;">Regularly supported the organization's hiring initiatives by participating in technical interviews and candidate evaluations throughout the year.</p>
+      </div>
+      <div class="card p-8 h-full">
+        <div class="mono text-xs mb-4" style="color:var(--muted);">CONTRIBUTION · 03</div>
+        <div class="chip mb-5"><span class="dot"></span>Pre-Sales</div>
+        <h4 class="serif text-2xl mb-3">Solution Discussions</h4>
+        <p style="color:#2b2722;">Contributed technical expertise during solution discussions for new business opportunities whenever required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5 placeholder -->
+<section id="section-5" class="px-6 md:px-12 py-24 relative">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="num-tab">05</div>
+      <div class="section-num">Technology Learning &amp; Competency Building</div>
+      <div class="flex-1 h-px" style="background:var(--line);"></div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-16">
+      <div class="md:col-span-5">
+        <h2 class="display text-4xl md:text-5xl">A year of <em class="italic" style="color:var(--accent);">deliberate</em> learning.</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-lg leading-relaxed" style="color:#2b2722;">
+          Continuous learning has remained one of my key focus areas throughout the year. I have invested significant <span class="serif italic">personal time, including weekends</span>, to strengthen my expertise across multiple technology stacks.
+        </p>
+      </div>
+    </div>
+
+    <div class="rule mb-16"></div>
+
+    <div class="grid md:grid-cols-2 gap-x-12 gap-y-12 mb-16">
+      <!-- Next.js, React & React Native -->
+      <div>
+        <div class="flex items-baseline justify-between mb-3">
+          <h4 class="serif text-2xl">Next.js · React · React Native</h4>
+          <span class="mono text-xs" style="color:var(--muted);">FRONTEND</span>
+        </div>
+        <div class="tech-bar mb-4"><div class="tech-fill" style="width:92%;"></div></div>
+        <p style="color:#2b2722;">Enhanced expertise in scalable frontend architecture, server-side rendering, middleware, routing strategies, authentication, and enterprise application development using Next.js and React technologies.</p>
+      </div>
+
+      <!-- AWS Cloud -->
+      <div>
+        <div class="flex items-baseline justify-between mb-3">
+          <h4 class="serif text-2xl">AWS Cloud</h4>
+          <span class="mono text-xs" style="color:var(--muted);">INFRASTRUCTURE</span>
+        </div>
+        <div class="tech-bar mb-4"><div class="tech-fill" style="width:80%;"></div></div>
+        <p style="color:#2b2722;">Built practical hands-on experience with AWS services including Amplify, CloudFront, S3, Lambda, and production deployment strategies. Successfully applied these technologies across multiple production implementations while preparing for the <span class="serif italic">AWS Certified Cloud Practitioner</span> certification.</p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="pill">Amplify</span><span class="pill">CloudFront</span><span class="pill">S3</span><span class="pill">Lambda</span>
+        </div>
+      </div>
+
+      <!-- Flutter & Dart -->
+      <div>
+        <div class="flex items-baseline justify-between mb-3">
+          <h4 class="serif text-2xl">Flutter &amp; Dart</h4>
+          <span class="mono text-xs" style="color:var(--muted);">MOBILE</span>
+        </div>
+        <div class="tech-bar mb-4"><div class="tech-fill" style="width:55%;"></div></div>
+        <p style="color:#2b2722;">Started learning Flutter and Dart with the objective of building a production-ready mobile application prototype similar to the proposed Tappoo solution, strengthening future delivery capabilities.</p>
+      </div>
+
+      <!-- Salesforce Platform -->
+      <div>
+        <div class="flex items-baseline justify-between mb-3">
+          <h4 class="serif text-2xl">Salesforce Platform</h4>
+          <span class="mono text-xs" style="color:var(--muted);">PLATFORM</span>
+        </div>
+        <div class="tech-bar mb-4"><div class="tech-fill" style="width:88%;"></div></div>
+        <p style="color:#2b2722;">Expanded expertise in Salesforce integration patterns using Connected Apps, Apex APIs, Flow Automation, Platform Events, and Agentforce, enabling AI-assisted engineering and scalable enterprise solutions.</p>
+      </div>
+    </div>
+
+    <!-- Certification highlight -->
+    <div class="ink-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+      <div>
+        <div class="text-xs tracking-[0.3em] uppercase mb-3" style="color:rgba(244,239,230,0.6);">Professional Certification</div>
+        <h4 class="serif text-3xl md:text-4xl mb-2">Salesforce Marketing Cloud Administrator</h4>
+        <p class="mt-3" style="color:rgba(244,239,230,0.7);">Currently preparing for certification to broaden expertise across the Salesforce ecosystem.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="badge-dot" style="background:var(--gold);"></span>
+        <span class="text-xs tracking-[0.3em] uppercase" style="color:rgba(244,239,230,0.7);">In Progress</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6 placeholder -->
+<section id="section-6" class="ink-bg px-6 md:px-12 py-24 relative">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="num-tab" style="background:var(--paper); color:var(--ink);">06</div>
+      <div class="section-num" style="color:rgba(244,239,230,0.6);">Understanding &amp; Imbibing Company Culture</div>
+      <div class="flex-1 h-px" style="background:rgba(244,239,230,0.15);"></div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-16">
+      <div class="md:col-span-5">
+        <h2 class="display text-4xl md:text-5xl">Living the values, <em class="italic" style="color:var(--gold);">every day</em>.</h2>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-lg leading-relaxed" style="color:rgba(244,239,230,0.8);">
+          Throughout the year, I have consistently demonstrated the organization's core values through <span class="serif italic">ownership, customer focus, collaboration, innovation, and engineering excellence</span>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Core values strip -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-20">
+      <div class="border p-4 text-center" style="border-color:rgba(244,239,230,0.18);">
+        <div class="serif text-xl">Ownership</div>
+      </div>
+      <div class="border p-4 text-center" style="border-color:rgba(244,239,230,0.18);">
+        <div class="serif text-xl">Customer Focus</div>
+      </div>
+      <div class="border p-4 text-center" style="border-color:rgba(244,239,230,0.18);">
+        <div class="serif text-xl">Collaboration</div>
+      </div>
+      <div class="border p-4 text-center" style="border-color:rgba(244,239,230,0.18);">
+        <div class="serif text-xl">Innovation</div>
+      </div>
+      <div class="border p-4 text-center" style="border-color:rgba(244,239,230,0.18);">
+        <div class="serif text-xl">Excellence</div>
+      </div>
+    </div>
+
+    <div class="rule mb-16" style="background:linear-gradient(90deg,transparent,rgba(244,239,230,0.2),transparent);"></div>
+
+    <div class="grid md:grid-cols-12 gap-12 mb-16">
+      <div class="md:col-span-6">
+        <div class="section-num mb-4" style="color:rgba(244,239,230,0.6);">Belief</div>
+        <p class="serif text-2xl md:text-3xl leading-snug" style="color:var(--paper);">
+          “I strongly believe in taking <em class="italic" style="color:var(--gold);">complete ownership</em> of outcomes rather than limiting my responsibilities to software development alone.”
+        </p>
+        <p class="mt-6" style="color:rgba(244,239,230,0.75);">
+          I actively contribute across solution architecture, customer discussions, production support, mentoring, delivery planning, and business initiatives to ensure overall project success.
+        </p>
+      </div>
+
+      <div class="md:col-span-6">
+        <div class="section-num mb-4" style="color:rgba(244,239,230,0.6);">Fostering a high-performing culture</div>
+        <div class="space-y-5">
+          <div class="flex items-start gap-4">
+            <span class="serif" style="color:var(--gold);">·</span>
+            <p style="color:rgba(244,239,230,0.85);">Supporting teammates during complex technical challenges.</p>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="serif" style="color:var(--gold);">·</span>
+            <p style="color:rgba(244,239,230,0.85);">Sharing knowledge openly through mentoring and knowledge transfer sessions.</p>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="serif" style="color:var(--gold);">·</span>
+            <p style="color:rgba(244,239,230,0.85);">Promoting engineering best practices focused on quality, scalability, and maintainability.</p>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="serif" style="color:var(--gold);">·</span>
+            <p style="color:rgba(244,239,230,0.85);">Leading by example through accountability, timely delivery, and professional communication.</p>
+          </div>
+          <div class="flex items-start gap-4">
+            <span class="serif" style="color:var(--gold);">·</span>
+            <p style="color:rgba(244,239,230,0.85);">Maintaining a customer-first mindset while balancing technical excellence with business priorities.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Long-term objective -->
+    <div class="border-l-2 pl-8 md:pl-12 py-6" style="border-color:var(--gold);">
+      <div class="text-xs tracking-[0.3em] uppercase mb-4" style="color:var(--gold);">Long-term Objective</div>
+      <p class="serif text-2xl md:text-3xl italic leading-snug" style="color:var(--paper);">
+        To build engineering teams that not only deliver high-quality software but also deeply understand customer problems, design scalable solutions, and take complete ownership of business outcomes.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="px-6 md:px-12 py-24" id="closing-section">
+  <div class="max-w-5xl mx-auto text-center">
+    <span class="section-num">In Closing</span>
+    <h2 class="display text-5xl md:text-7xl mt-6 mb-10">
+      A year of <em class="italic" style="color:var(--accent);">building</em>,<br/>
+      mentoring, and <em class="italic">delivering</em>.
+    </h2>
+    <div class="rule mb-12 max-w-md mx-auto"></div>
+    <p class="text-lg max-w-2xl mx-auto" style="color:#2b2722;">
+      From migrating 200,000+ users to mentoring the next generation of engineers — every contribution rooted in ownership and a customer-first mindset.
+    </p>
+    <div class="mt-16 inline-flex items-center gap-4 px-8 py-4 border" style="border-color:var(--line);">
+      <span class="dot"></span>
+      <span class="text-xs tracking-[0.3em] uppercase">Prepared for Management Review · FY 2025–26</span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="px-6 md:px-12 py-12 hairline border-t">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div>
+      <div class="serif text-xl">Performance Review · FY 2025–26</div>
+      <div class="text-xs mt-1" style="color:var(--muted);">Prepared for management review</div>
+    </div>
+    <div class="text-xs tracking-[0.3em] uppercase" style="color:var(--muted);">End of document</div>
+  </div>
+</footer>
+
+<script>
+  // progress bar
+  const bar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = pct + '%';
+  });
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.utils.toArray('.reveal').forEach(el => {
+    gsap.to(el, {
+      opacity:1, y:0, duration:1, ease:'power3.out',
+      scrollTrigger:{ trigger:el, start:'top 85%' }
+    });
+  });
+
+  ScrollTrigger.batch('.toc-link, .stat-card, .card, .quote-block, h2.display, h3.display', {
+    onEnter: batch => gsap.fromTo(batch, {opacity:0, y:24}, {opacity:1, y:0, duration:0.9, stagger:0.08, ease:'power3.out'})
+  });
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
